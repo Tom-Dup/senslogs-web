@@ -15,7 +15,8 @@
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col">UUID</th>
+                        <th scope="col">Device</th>
+                        <th scope="col">Session</th>
                         <th scope="col">Date</th>
                         <th scope="col">Lat.</th>
                         <th scope="col">Long.</th>
@@ -26,13 +27,14 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">{{ $coordinate->uuid }}</th>
+                        <th scope="row">{{ $coordinate->device_id }}</th>
+                        <td>{{ $coordinate->session_id }}</td>
                         <td>{{ $coordinate->datetime() }}</td>
                         <td>{{ $coordinate->latitude }}</td>
                         <td>{{ $coordinate->longitude }}</td>
                         <td>{{ $coordinate->altitude }}</td>
                         <td>{{ $coordinate->speed }}</td>
-                        <td>{{ $coordinate->battery }}</td>
+                        <td>{{ $coordinate->battery_temp }}° / {{ $coordinate->battery_level }}%</td>
                     </tr>
                 </tbody>
             </table>

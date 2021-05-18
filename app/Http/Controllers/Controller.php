@@ -21,22 +21,27 @@ class Controller extends BaseController
         if (count($values) < 8)
             return response()->json($response);
         $Coordinate = new Coordinate();
-        $Coordinate->uuid = (empty($values[0])) ? null : $values[0];
-        $Coordinate->ts = (empty($values[1])) ? null : $values[1];
-        $Coordinate->latitude = (empty($values[2])) ? null : $values[2];
-        $Coordinate->longitude = (empty($values[3])) ? null : $values[3];
-        $Coordinate->altitude = (empty($values[4])) ? null : $values[4];
-        $Coordinate->bearing = (empty($values[5])) ? null : $values[5];
-        $Coordinate->accuracy = (empty($values[6])) ? null : $values[6];
-        $Coordinate->speed = (empty($values[7])) ? null : $values[7];
-        $Coordinate->battery = (empty($values[8])) ? null : $values[8];
+        $i = 0;
+        $Coordinate->device_id = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->session_id = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->ts_ms = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->latitude = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->longitude = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->altitude = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->bearing = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->accuracy = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->speed = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->battery_temp = (empty($values[$i])) ? null : $values[$i]; $i++;
+        $Coordinate->battery_level = (empty($values[$i])) ? null : $values[$i]; $i++;
         $Coordinate->save();
         $response = ["status" => "OK"];
         return response()->json($response);
     }
 
     public function index() {
-        $coordinate = Coordinate::orderBy("ts", "DESC")->first();
+        $coordinate = Coordinate::orderBy("ts_ms", "DESC")->first();
+        if (empty($coordinate))
+            abort("404");
         return view("index")->with('coordinate', $coordinate);
     }
 }
