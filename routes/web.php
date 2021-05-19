@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [\App\Http\Controllers\Controller::class, 'index']);
 Route::get('/record', [\App\Http\Controllers\Controller::class, 'record']);
+Route::get('/map', [\App\Http\Controllers\Controller::class, 'map']);

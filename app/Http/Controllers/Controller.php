@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coordinate;
+use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -33,7 +34,11 @@ class Controller extends BaseController
         $Coordinate->speed = (empty($values[$i])) ? null : $values[$i]; $i++;
         $Coordinate->battery_temp = (empty($values[$i])) ? null : $values[$i]; $i++;
         $Coordinate->battery_level = (empty($values[$i])) ? null : $values[$i]; $i++;
-        $Coordinate->save();
+        try {
+            $Coordinate->save();
+        } catch (Exception $e) {
+
+        }
         $response = ["status" => "OK"];
         return response()->json($response);
     }
@@ -43,5 +48,24 @@ class Controller extends BaseController
         if (empty($coordinate))
             abort("404");
         return view("index")->with('coordinate', $coordinate);
+    }
+
+    public function map() {
+        $coordinates = Coordinate::where("session_id", "=", "cba77f77-d8b7-4f1e-8ff8-cd64a7e69976")->orderBy("ts_ms")->get();
+        $points = [];
+        $last = 0;
+        foreach ($coordinates as $coordinate) {
+            // Keep only one point every 5 secs
+            $secs = round($coordinate->ts_ms / 1000);
+            if (empty($last) || $secs >= $last+5) {
+                $points[$secs] = [
+                    'latitude' => $coordinate->latitude,
+                    'longitude' => $coordinate->longitude,
+                ];
+                $last = $secs;
+            }
+        }
+        $coordinate = Coordinate::where("session_id", "=", "cba77f77-d8b7-4f1e-8ff8-cd64a7e69976")->orderBy("ts_ms", "DESC")->first();
+        return view("map")->with('points', $points)->with('coordinate', $coordinate);
     }
 }
