@@ -1,35 +1,70 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="/assets/css/leaflet.css" />
-    <title>Senslogs Web</title>
-  </head>
-  <body>
-    <div class="row">
-        <div  class="col-12" id="mapid" style="height: 320px;"></div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="/assets/js/leaflet.js"></script>
-    <script>
-        var mymap = L.map('mapid').setView([{{ $coordinate->latitude }}, {{ $coordinate->longitude }}], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(mymap);
-        L.marker([{!! $coordinate->latitude !!}, {!! $coordinate->longitude !!}]).addTo(mymap);
-        var latlngs = [
-            @foreach ($points as $point)
+@extends('layouts/default')
+
+@section('title')
+    Map
+    @parent
+@stop
+
+{{-- Page CSS --}}
+@section('header_styles')
+    <link rel="stylesheet" href="{{ asset("vendor/leaflet/leaflet.css") }}" />
+@stop
+
+{{-- Page content --}}
+@section('content')
+<div class="row">
+    {{--<div class="col-12">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Device</th>
+                    <th scope="col">Session</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Lat.</th>
+                    <th scope="col">Long.</th>
+                    <th scope="col">Alt.</th>
+                    <th scope="col">Speed</th>
+                    <th scope="col">Battery</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">{{ $last_record->device_id }}</th>
+                    <td>{{ $last_record->session_id }}</td>
+                    <td>{{ $last_record->datetime() }}</td>
+                    <td>{{ $last_record->latitude }}</td>
+                    <td>{{ $last_record->longitude }}</td>
+                    <td>{{ $last_record->altitude }}</td>
+                    <td>{{ $last_record->speed }}</td>
+                    <td>{{ $last_record->battery_temp }}° / {{ $last_record->battery_level }}%</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>--}}
+    <div class="col-12" id="main_map" style="width: 100%; min-height: 450px;"></div>
+</div>
+@stop
+
+{{-- Page JS --}}
+@section('footer_scripts')
+    <script src="{{ asset("vendor/leaflet/leaflet.js") }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var main_map = L.map('main_map').setView([{{ $last_record->latitude }}, {{ $last_record->longitude }}], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(main_map);
+            L.marker([{!! $last_record->latitude !!}, {!! $last_record->longitude !!}]).addTo(main_map);
+            var latlngs = [
+                    @foreach ($points as $point)
                 [{{$point['latitude']}}, {{$point['longitude']}}],
-            @endforeach
-            [{{$coordinate->latitude}}, {{$coordinate->longitude}}]
-        ];
-        var polyline = L.polyline(latlngs, {color: 'red'}).addTo(mymap);
-        mymap.fitBounds(polyline.getBounds());
+                    @endforeach
+                [{{$last_record->latitude}}, {{$last_record->longitude}}]
+            ];
+            var polyline = L.polyline(latlngs, {color: 'red'}).addTo(main_map);
+            main_map.fitBounds(polyline.getBounds());
+        });
     </script>
-  </body>
-</html>
+@stop
